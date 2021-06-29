@@ -1,5 +1,4 @@
-QuickFIX/Go
-===========
+# QuickFIX/Go
 
 [![Build Status](https://github.com/quickfixgo/quickfix/workflows/CI/badge.svg)](https://github.com/quickfixgo/quickfix/actions) [![GoDoc](https://godoc.org/github.com/quickfixgo/quickfix?status.png)](https://godoc.org/github.com/quickfixgo/quickfix) [![Go Report Card](https://goreportcard.com/badge/github.com/quickfixgo/quickfix)](https://goreportcard.com/report/github.com/quickfixgo/quickfix)
 
@@ -8,8 +7,7 @@ QuickFIX/Go
 
 Open Source [FIX Protocol](http://www.fixprotocol.org/) library implemented in Go
 
-Getting Started and Documentation
----------------------------------
+## Getting Started and Documentation
 
 * [User Manual](http://quickfixgo.org/docs)
 * [API Documentation](https://godoc.org/github.com/quickfixgo/quickfix)
@@ -19,7 +17,7 @@ Getting Started and Documentation
 To install QuickFIX/Go, use `go get`:
 
 ```sh
-$ go get github.com/quickfixgo/quickfix
+go get github.com/quickfixgo/quickfix@main
 ```
 
 ### Staying up to date
@@ -34,36 +32,36 @@ See [examples](https://github.com/quickfixgo/examples) for some simple examples 
 
 QuickFIX/Go includes separate packages for tags, fields, enums, messages, and message components generated from the FIX 4.0 - FIX5.0SP2 specs. See:
 
-* [github.com/quickfixgo/tag](https://github.com/quickfixgo/tag)
-* [github.com/quickfixgo/field](https://github.com/quickfixgo/field)
-* [github.com/quickfixgo/enum](https://github.com/quickfixgo/enum)
-* [github.com/quickfixgo/fix40](https://github.com/quickfixgo/fix40)
-* [github.com/quickfixgo/fix41](https://github.com/quickfixgo/fix41)
-* [github.com/quickfixgo/fix42](https://github.com/quickfixgo/fix42)
-* [github.com/quickfixgo/fix43](https://github.com/quickfixgo/fix43)
-* [github.com/quickfixgo/fix44](https://github.com/quickfixgo/fix44)
-* [github.com/quickfixgo/fix50](https://github.com/quickfixgo/fix50)
-* [github.com/quickfixgo/fix50sp1](https://github.com/quickfixgo/fix50sp1)
-* [github.com/quickfixgo/fix50sp2](https://github.com/quickfixgo/fix50sp2)
-* [github.com/quickfixgo/fixt11](https://github.com/quickfixgo/fixt11)
+* [Tag](https://github.com/quickfixgo/tag)
+* [Field](https://github.com/quickfixgo/field)
+* [Enum](https://github.com/quickfixgo/enum)
+* [FIX 4.0](https://github.com/quickfixgo/fix40)
+* [FIX 4.1](https://github.com/quickfixgo/fix41)
+* [FIX 4.2](https://github.com/quickfixgo/fix42)
+* [FIX 4.3](https://github.com/quickfixgo/fix43)
+* [FIX 4.4](https://github.com/quickfixgo/fix44)
+* [FIX 5.0](https://github.com/quickfixgo/fix50)
+* [FIX 5.0sp1](https://github.com/quickfixgo/fix50sp1)
+* [FIX 5.0sp2](https://github.com/quickfixgo/fix50sp2)
+* [FIXT 1.1](https://github.com/quickfixgo/fixt11)
 
 For most FIX applications, these generated resources are sufficient. Custom FIX applications may generate source specific to the FIX spec of that application using the `generate-fix` tool included with QuickFIX/Go.
 
 Following installation, `generate-fix` is installed to `$GOPATH/bin/generate-fix`. Run `$GOPATH/bin/generate-fix --help` for usage instructions.
 
-Developing QuickFIX/Go
-----------------------
+## Contributing
 
-If you wish to work on QuickFIX/Go itself, you will first need [Go](http://www.golang.org) installed and configured on your machine (version 1.13+ is preferred, but the minimum required version is 1.6). 
+
+If you wish to work on QuickFIX/Go itself, you will first need [Go](http://www.golang.org) installed and configured on your machine (version 1.16+ is preferred, but the minimum required version is 1.6). 
 
 Next, using [Git](https://git-scm.com/), clone the repository via `git clone git@github.com:quickfixgo/quickfix.git`
 
 ### Installing Dependencies
 
-As of Go version 1.13, QuickFIX/Go uses [modules](https://github.com/golang/go/wiki/Modules) to manage dependencies. You may require `GO111MODULE=on`. To install dependencies, run 
+As of Go version 1.16, QuickFIX/Go uses [modules](https://github.com/golang/go/wiki/Modules) to manage dependencies. You may require `GO111MODULE=on`. To install dependencies, run 
 
 ```sh
-go mod download
+go mod vendor
 ```
 
 **Note:** No vendored dependencies are included in the QuickFIX/Go source.
@@ -73,18 +71,14 @@ go mod download
 The default make target runs [go vet](https://godoc.org/golang.org/x/tools/cmd/vet) and unit tests.
 
 ```sh
-$ make
+make
 ```
 
 If this exits with exit status 0, then everything is working!
 
 ### Generated Code
 
-Generated code from the FIX40-FIX50SP2 specs are available as separate repos under the [QuickFIX/Go organization](https://github.com/quickfixgo).  The source specifications for this generated code is located in `spec/`.  Generated code can be identified by the `.generated.go` suffix.  Any changes to generated code must be captured by changes to source in `cmd/generate-fix`.  After making changes to the code generator source, run the following to re-generate the source
-
-```sh
-$ make generate-dist
-```
+Generated code from the FIX40-FIX50SP2 specs are available as separate repos under the [QuickFIX/Go organization](https://github.com/quickfixgo). The source specifications for this generated code is located in `spec/`. Generated code can be identified by the `.generated.go` suffix.  Any changes to generated code must be captured by changes to source in `cmd/generate-fix`.
 
 If you are making changes to the generated code, please create Pull Requests for these changes for the affected repos.
 
@@ -128,4 +122,4 @@ Note that to specify a specific revision, you can manually edit the `go.mod` fil
 Licensing
 ---------
 
-This software is available under the QuickFIX Software License. Please see the [LICENSE.txt](https://github.com/quickfixgo/quickfix/blob/master/LICENSE.txt) for the terms specified by the QuickFIX Software License.
+This software is available under the QuickFIX Software License. Please see the [LICENSE](https://github.com/quickfixgo/quickfix/blob/main/LICENSE) for the terms specified by the QuickFIX Software License.
