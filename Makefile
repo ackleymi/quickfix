@@ -8,6 +8,7 @@ generate-dev: clean
 
 fmt:
 	go fmt `go list ./... | grep -v quickfix/gen`
+	gofmt -s -w *.go  
 
 vet:
 	go vet `go list ./... | grep -v quickfix/gen`
