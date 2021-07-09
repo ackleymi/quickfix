@@ -33,19 +33,23 @@ jobs:
             ${{ runner.os }}-go-
       - name: Dependencies
         run: go mod tidy
+      - name: Run Mongo
+        run: docker run -d -p 27017:27017 mongo
       - name: Test
-        run: go test -v -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./...
-      - name: Upload coverage
-        uses: codecov/codecov-action@v1
-        if: matrix.os == 'ubuntu-latest'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.txt
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
-        if: success() && startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
-        with:
-          version: latest
-          args: release --rm-dist
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          MONGODB_TEST_CXN: "localhost"
+        run: go test -v -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./...
+      # - name: Upload coverage
+      #   uses: codecov/codecov-action@v1
+      #   if: matrix.os == 'ubuntu-latest'
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     file: ./coverage.txt
+      # - name: Run GoReleaser
+      #   uses: goreleaser/goreleaser-action@v2
+      #   if: success() && startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
+      #   with:
+      #     version: latest
+      #     args: release --rm-dist
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_PAT }}

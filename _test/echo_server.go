@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -111,31 +110,31 @@ func main() {
 
 	cfg, err := os.Open(os.Args[1])
 	if err != nil {
-		fmt.Printf("Error opening %v, %v\n", os.Args[1], err)
+		log.Printf("Error opening %v, %v\n", os.Args[1], err)
 		return
 	}
 
 	appSettings, err := quickfix.ParseSettings(cfg)
 	if err != nil {
-		fmt.Println("Error reading cfg:", err)
+		log.Println("Error reading cfg:", err)
 		return
 	}
 
 	fileLogFactory, err := quickfix.NewFileLogFactory(appSettings)
 
 	if err != nil {
-		fmt.Println("Error creating file log factory:", err)
+		log.Println("Error creating file log factory:", err)
 		return
 	}
 
 	acceptor, err := quickfix.NewAcceptor(app, quickfix.NewMemoryStoreFactory(), appSettings, fileLogFactory)
 	if err != nil {
-		fmt.Println("Unable to create Acceptor: ", err)
+		log.Println("Unable to create Acceptor: ", err)
 		return
 	}
 
 	if err = acceptor.Start(); err != nil {
-		fmt.Println("Unable to start Acceptor: ", err)
+		log.Println("Unable to start Acceptor: ", err)
 		return
 	}
 

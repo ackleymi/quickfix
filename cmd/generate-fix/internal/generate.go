@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/printer"
 	"go/token"
+	"log"
 	"os"
 	"path"
 )
@@ -39,7 +40,7 @@ func (h *ErrorHandler) Handle(err error) {
 	case nil:
 	//do nothing
 	case ParseError:
-		fmt.Println(err)
+		log.Println(err)
 		h.ReturnCode = 1
 	default:
 		panic(err)

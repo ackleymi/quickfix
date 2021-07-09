@@ -10,6 +10,30 @@ linters:
     - nlreturn
     - gci
     - exhaustivestruct
+    - thelper
+    - stylecheck
+    - goerr113
+    - gochecknoglobals
+    - exhaustive
+    - errorlint
+    - cyclop
+    - whitespace
+    - unparam
+    - scopelint
+    - revive
+    - nestif
+    - unconvert
+    - nakedret
+    - interfacer
+    - dupl
+    - forbidigo
+    - funlen
+    - gocognit
+    - goconst
+    - gocritic
+    - godot
+    - golint
+    - lll
 linters-settings:
   maligned:
     # print struct with more effective memory layout or not, false by default
