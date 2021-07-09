@@ -91,7 +91,7 @@ QuickFIX/Go acceptance tests depend on ruby in path.
 To run acceptance tests,
 
         # generate code locally
-        make generate
+        make generate-dev
 
 		# build acceptance test rig
 		make build_accept

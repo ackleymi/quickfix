@@ -20,7 +20,7 @@ func init() {
 		"requiredFields":                        requiredFields,
 		"beginString":                           beginString,
 		"routerBeginString":                     routerBeginString,
-		"importRootPath":                        getImportPathRoot,
+		"importPrefix":                          getImportPrefix,
 		"quickfixType":                          quickfixType,
 		"quickfixValueType":                     quickfixValueType,
 		"getGlobalFieldType":                    getGlobalFieldType,
@@ -168,10 +168,10 @@ import(
 
 	"github.com/quickfixgo/quickfix"
 	{{- if checkIfEnumImportRequired .MessageDef}}
-	"{{ importRootPath }}/enum"
+	"{{ importPrefix }}/enum"
 	{{- end }}
-	"{{ importRootPath }}/field"
-	"{{ importRootPath }}/tag"
+	"{{ importPrefix }}/field"
+	"{{ importPrefix }}/tag"
 )
 
 // Header is the {{ .Package }} Header type.
@@ -203,10 +203,10 @@ import(
 
 	"github.com/quickfixgo/quickfix"
 	{{- if checkIfEnumImportRequired .MessageDef}}
-	"{{ importRootPath }}/enum"
+	"{{ importPrefix }}/enum"
 	{{- end }}
-	"{{ importRootPath }}/field"
-	"{{ importRootPath }}/tag"
+	"{{ importPrefix }}/field"
+	"{{ importPrefix }}/tag"
 )
 
 // Trailer is the {{ .Package }} Trailer type.
@@ -231,11 +231,11 @@ import(
 
 	"github.com/quickfixgo/quickfix"
 	{{- if checkIfEnumImportRequired .MessageDef}}
-	"{{ importRootPath }}/enum"
+	"{{ importPrefix }}/enum"
 	{{- end }}
-	"{{ importRootPath }}/field"
-	"{{ importRootPath }}/{{ .TransportPackage }}"
-	"{{ importRootPath }}/tag"
+	"{{ importPrefix }}/field"
+	"{{ importPrefix }}/{{ .TransportPackage }}"
+	"{{ importPrefix }}/tag"
 )
 
 // {{ .Name }} is the {{ .FIXPackage }} {{ .Name }} type, MsgType = {{ .MsgType }}.
@@ -309,8 +309,8 @@ const (
 package field
 import(
 	"github.com/quickfixgo/quickfix"
-	"{{ importRootPath }}/enum"
-	"{{ importRootPath }}/tag"
+	"{{ importPrefix }}/enum"
+	"{{ importPrefix }}/tag"
 {{ if checkIfDecimalImportRequiredForFields . }} "github.com/shopspring/decimal" {{ end }}
 	"time"
 )

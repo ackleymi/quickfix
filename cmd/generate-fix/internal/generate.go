@@ -12,10 +12,10 @@ import (
 )
 
 var (
-	useFloat    = flag.Bool("use-float", false, "By default, FIX float fields are represented as arbitrary-precision fixed-point decimal numbers.  Set to 'true' to instead generate FIX float fields as float64 values.")
-	pkgRoot     = flag.String("pkg-root", "github.com/quickfixgo", "Set a string here to provide a custom import path for generated packages.")
-	tabWidth    = 8
-	printerMode = printer.UseSpaces | printer.TabIndent
+	useFloat     = flag.Bool("use-float", false, "By default, FIX float fields are represented as arbitrary-precision fixed-point decimal numbers.  Set to 'true' to instead generate FIX float fields as float64 values.")
+	importPrefix = flag.String("prefix", "github.com/quickfixgo", "Set a string here to provide a custom import prefix for generated packages.")
+	tabWidth     = 8
+	printerMode  = printer.UseSpaces | printer.TabIndent
 )
 
 //ParseError indicates generated go source is invalid

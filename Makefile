@@ -3,8 +3,8 @@ all: vet test
 clean:
 	rm -rf gen
 
-generate: clean
-	mkdir -p gen; cd gen; go run ../cmd/generate-fix/generate-fix.go ../spec/*.xml
+generate-dev: clean
+	mkdir -p gen; cd gen; go run ../cmd/generate-fix/generate-fix.go -prefix=github.com/quickfixgo/quickfix/gen ../spec/*.xml
 
 fmt:
 	go fmt `go list ./... | grep -v quickfix/gen`

@@ -1,6 +1,6 @@
 package internal
 
-// getImportPathRoot returns the root path to use in import statements.
-func getImportPathRoot() string {
-	return *pkgRoot
+// getImportPrefix returns the prefix to use in import statements.
+func getImportPrefix() string {
+	return *importPrefix
 }
