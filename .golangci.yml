@@ -34,6 +34,15 @@ linters:
     - godot
     - golint
     - lll
+    - gochecknoinits
+    - gocyclo
+    - maligned
+    - govet
+    - ifshort
+    - paralleltest
+    - predeclared
+    - wrapcheck
+    - makezero
 linters-settings:
   maligned:
     # print struct with more effective memory layout or not, false by default
