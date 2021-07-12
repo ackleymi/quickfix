@@ -1,4 +1,4 @@
-all: vet test
+all: lint test
 
 clean:
 	rm -rf gen
@@ -8,25 +8,24 @@ generate-dev: clean
 
 fmt:
 	go fmt `go list ./... | grep -v quickfix/gen`
-	gofmt -s -w *.go  
-
-vet:
-	go vet `go list ./... | grep -v quickfix/gen`
+	gofmt -s -w *.go
 
 lint:
-	go get github.com/golang/lint/golint
-	golint .
+	golangci-lint run -c .golangci.yml
 
-test: 
+test:
 	go test -v -cover . ./datadictionary ./internal
 
-_build_all: 
+ci-test:
+	go test -v -failfast -race -covermode=atomic -coverprofile=coverage.txt . ./datadictionary ./internal
+
+build-all: 
 	go build -v `go list ./...`
 
-build_accept: 
-	cd _test; go build -o echo_server
+build-acceptance-server: 
+	cd _test; go build -o echo-server
 
-build: _build_all build_accept
+build: build-all build-acceptance-server
 
 fix40:
 	cd _test; ./runat.sh $@.cfg 5001 "definitions/server/$@/*.def"
@@ -48,4 +47,4 @@ fix50sp2:
 ACCEPT_SUITE=fix40 fix41 fix42 fix43 fix44 fix50 fix50sp1 fix50sp2 
 accept: $(ACCEPT_SUITE)
 
-.PHONY: test $(ACCEPT_SUITE)
+.PHONY: test ci-test $(ACCEPT_SUITE)

@@ -1,4 +1,4 @@
-name: build
+name: Test & Coverage
 
 on:
   push:
@@ -38,18 +38,10 @@ jobs:
       - name: Test
         env:
           MONGODB_TEST_CXN: "localhost"
-        run: go test -v -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./...
-      # - name: Upload coverage
-      #   uses: codecov/codecov-action@v1
-      #   if: matrix.os == 'ubuntu-latest'
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     file: ./coverage.txt
-      # - name: Run GoReleaser
-      #   uses: goreleaser/goreleaser-action@v2
-      #   if: success() && startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
-      #   with:
-      #     version: latest
-      #     args: release --rm-dist
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        run: make ci-test
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.txt

@@ -1,0 +1,4 @@
+ignore:
+  - quickfix_test.go
+  - _test
+  - cmd

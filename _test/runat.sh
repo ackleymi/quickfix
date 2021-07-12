@@ -4,7 +4,7 @@ CFG=$1
 PORT=$2
 TESTS=$3
 
-./echo_server $CFG &
+./echo-server $CFG &
 pid=$!
 
 ruby -I. Runner.rb 127.0.0.1 $PORT $TESTS

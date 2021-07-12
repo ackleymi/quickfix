@@ -1,4 +1,4 @@
-name: acceptance
+name: Acceptance Tests
 on:
   push:
     tags:
@@ -36,4 +36,4 @@ jobs:
       - name: Test
         env:
           MONGODB_TEST_CXN: "localhost"
-        run: make generate-dev; if [ -z "$FIX_TEST" ]; then make build; make; else make build_accept; make $FIX_TEST; fi
+        run: make generate-dev; if [ -z "$FIX_TEST" ]; then make build; make; else make build-acceptance-server; make $FIX_TEST; fi
