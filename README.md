@@ -23,7 +23,7 @@ go get github.com/quickfixgo/quickfix@main
 
 ### Staying up to date
 
-To update QuickFIX/Go to the latest version, use `go get -u github.com/quickfixgo/quickfix`.
+To update QuickFIX/Go to the latest version, use `go get -u github.com/quickfixgo/quickfix`
 
 ### Example Apps
 
@@ -90,15 +90,16 @@ QuickFIX/Go has a comprehensive acceptance test suite covering the FIX protocol.
 QuickFIX/Go acceptance tests depend on ruby in path.
 
 To run acceptance tests,
+```sh
+# generate code locally
+make generate-dev
 
-        # generate code locally
-        make generate-dev
+# build acceptance test rig
+make build-acceptance-server
 
-		# build acceptance test rig
-		make build-acceptance-server
-
-		# run acceptance tests
-		make accept
+# run acceptance tests
+make accept
+```
 
 ### Dependencies
 

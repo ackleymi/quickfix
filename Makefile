@@ -47,4 +47,4 @@ fix50sp2:
 ACCEPT_SUITE=fix40 fix41 fix42 fix43 fix44 fix50 fix50sp1 fix50sp2 
 accept: $(ACCEPT_SUITE)
 
-.PHONY: test ci-test $(ACCEPT_SUITE)
+.PHONY: clean all lint fmt generate-dev test ci-test accept build build-acceptance-server build-all $(ACCEPT_SUITE)
