@@ -15,14 +15,14 @@ jobs:
       matrix:
         go: [1.16]
         fix-version:
-          - FIX_TEST=fix40
-          - FIX_TEST=fix41
-          - FIX_TEST=fix42
-          - FIX_TEST=fix43
-          - FIX_TEST=fix44
-          - FIX_TEST=fix50
-          - FIX_TEST=fix50sp1
-          - FIX_TEST=fix50sp2
+          - fix40
+          - fix41
+          - fix42
+          - fix43
+          - fix44
+          - fix50
+          - fix50sp1
+          - fix50sp2
     steps:
       - name: Setup
         uses: actions/setup-go@v2
@@ -35,4 +35,5 @@ jobs:
       - name: Test
         env:
           MONGODB_TEST_CXN: "localhost"
+          FIX_TEST: ${{ matrix.fix-version }}
         run: make generate-dev; make build-acceptance-server; make $FIX_TEST;
