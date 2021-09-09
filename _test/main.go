@@ -7,16 +7,42 @@ import (
 	"os/signal"
 
 	"github.com/quickfixgo/quickfix"
-	"github.com/quickfixgo/quickfix/gen/field"
-	"github.com/quickfixgo/quickfix/gen/tag"
 )
 
 var router *quickfix.MessageRouter = quickfix.NewMessageRouter()
 
-type EchoApplication struct {
-	log      *log.Logger
-	OrderIds map[string]bool
-}
+type (
+	EchoApplication struct {
+		log      *log.Logger
+		OrderIds map[string]bool
+	}
+	//
+	//
+	// Override these impls from the field and tag pkgs for tests.
+	//
+	//
+	// PossResendField is a BOOLEAN field.
+	PossResendField struct{ quickfix.FIXBoolean }
+	// ClOrdIDField is a STRING field.
+	ClOrdIDField struct{ quickfix.FIXString }
+	// MsgTypeField is a enum.MsgType field.
+	MsgTypeField struct{ quickfix.FIXString }
+)
+
+// Tag returns tag.PossResend (97).
+func (f PossResendField) Tag() quickfix.Tag { return 97 }
+
+func (f PossResendField) Value() bool { return f.Bool() }
+
+// Tag returns tag.ClOrdID (11).
+func (f ClOrdIDField) Tag() quickfix.Tag { return 11 }
+
+func (f ClOrdIDField) Value() string { return f.String() }
+
+// Tag returns tag.MsgType (35).
+func (f MsgTypeField) Tag() quickfix.Tag { return 35 }
+
+func (f MsgTypeField) Value() string { return f.String() }
 
 func (e EchoApplication) OnCreate(sessionID quickfix.SessionID) {
 	e.log.Printf("OnCreate %v\n", sessionID.String())
@@ -45,11 +71,12 @@ func (e *EchoApplication) FromApp(msg *quickfix.Message, sessionID quickfix.Sess
 }
 
 func (e *EchoApplication) processMsg(msg *quickfix.Message, sessionID quickfix.SessionID) quickfix.MessageRejectError {
-	var possResend field.PossResendField
+	var possResend PossResendField
 	msg.Header.Get(&possResend)
 
-	if msg.Body.Has(tag.ClOrdID) {
-		var orderID field.ClOrdIDField
+	// Usually use tag.ClOrdID instead of literal 11 here.
+	if msg.Body.Has(11) {
+		var orderID ClOrdIDField
 
 		if err := msg.Body.Get(&orderID); err != nil {
 			return err
@@ -76,7 +103,7 @@ func (e *EchoApplication) processMsg(msg *quickfix.Message, sessionID quickfix.S
 }
 
 func copyMessage(msg *quickfix.Message) *quickfix.Message {
-	msgType := new(field.MsgTypeField)
+	msgType := new(MsgTypeField)
 	msg.Header.Get(msgType)
 
 	msg.Header.Clear()

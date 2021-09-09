@@ -36,4 +36,4 @@ jobs:
         env:
           MONGODB_TEST_CXN: "localhost"
           FIX_TEST: ${{ matrix.fix-version }}
-        run: make generate-dev; make build-acceptance-server; make $FIX_TEST;
+        run: make build-acceptance-server; make $FIX_TEST;
