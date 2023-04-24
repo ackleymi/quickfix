@@ -478,9 +478,9 @@ func tcTagAppearsMoreThanOnce() validateTest {
 	tag := Tag(40)
 
 	return validateTest{
-		TestName:  "Tag appears more than once",
-		Validator: validator,
-		MessageBytes: []byte("8=FIX.4.09=10735=D34=249=TW52=20060102-15:04:0556=ISLD11=ID21=140=140=254=138=20055=INTC60=20060102-15:04:0510=234"),
+		TestName:             "Tag appears more than once",
+		Validator:            validator,
+		MessageBytes:         []byte("8=FIX.4.0\0019=107\00135=D\00134=2\00149=TW\00152=20060102-15:04:05\00156=ISLD\00111=ID\00121=1\00140=1\00140=2\00154=1\00138=200\00155=INTC\00160=20060102-15:04:05\00110=234\001"),
 		ExpectedRejectReason: rejectReasonTagAppearsMoreThanOnce,
 		ExpectedRefTagID:     &tag,
 	}
@@ -491,9 +491,9 @@ func tcFloatValidation() validateTest {
 	validator := NewValidator(defaultValidatorSettings, dict, nil)
 	tag := Tag(38)
 	return validateTest{
-		TestName:  "FloatValidation",
-		Validator: validator,
-		MessageBytes: []byte("8=FIX.4.29=10635=D34=249=TW52=20140329-22:38:4556=ISLD11=ID21=140=154=138=+200.0055=INTC60=20140329-22:38:4510=178"),
+		TestName:             "FloatValidation",
+		Validator:            validator,
+		MessageBytes:         []byte("8=FIX.4.2\0019=106\00135=D\00134=2\00149=TW\00152=20140329-22:38:45\00156=ISLD\00111=ID\00121=1\00140=1\00154=1\00138=+200.00\00155=INTC\00160=20140329-22:38:45\00110=178\001"),
 		ExpectedRejectReason: rejectReasonIncorrectDataFormatForValue,
 		ExpectedRefTagID:     &tag,
 	}
