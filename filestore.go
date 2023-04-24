@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"os"
 	"path"
 	"strconv"
@@ -203,7 +204,7 @@ func (store *fileStore) populateCache() (creationTimePopulated bool, err error) 
 	}
 
 	if senderSeqNumBytes, err := ioutil.ReadFile(store.senderSeqNumsFname); err == nil {
-		if senderSeqNum, err := strconv.ParseUint(string(senderSeqNumBytes), 10, 64); err == nil {
+		if senderSeqNum, err := strconv.ParseUint(string(senderSeqNumBytes), 10, strconv.IntSize); err == nil {
 			if err = store.cache.SetNextSenderMsgSeqNum(uint(senderSeqNum)); err != nil {
 				return creationTimePopulated, errors.Wrap(err, "cache set next sender")
 			}
@@ -211,7 +212,7 @@ func (store *fileStore) populateCache() (creationTimePopulated bool, err error) 
 	}
 
 	if targetSeqNumBytes, err := ioutil.ReadFile(store.targetSeqNumsFname); err == nil {
-		if targetSeqNum, err := strconv.ParseUint(string(targetSeqNumBytes), 10, 64); err == nil {
+		if targetSeqNum, err := strconv.ParseUint(string(targetSeqNumBytes), 10, strconv.IntSize); err == nil {
 			if err = store.cache.SetNextTargetMsgSeqNum(uint(targetSeqNum)); err != nil {
 				return creationTimePopulated, errors.Wrap(err, "cache set next target")
 			}
