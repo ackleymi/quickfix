@@ -132,12 +132,12 @@ func generateMessageFilter(s *SessionID) (messageFilter *mongoQuickFixEntryData)
 
 type mongoQuickFixEntryData struct {
 	// Message specific data.
-	Msgseq  uint `bson:"msgseq,omitempty"`
+	Msgseq  uint   `bson:"msgseq,omitempty"`
 	Message []byte `bson:"message,omitempty"`
 	// Session specific data.
 	CreationTime   time.Time `bson:"creation_time,omitempty"`
-	IncomingSeqNum uint    `bson:"incoming_seq_num,omitempty"`
-	OutgoingSeqNum uint    `bson:"outgoing_seq_num,omitempty"`
+	IncomingSeqNum uint      `bson:"incoming_seq_num,omitempty"`
+	OutgoingSeqNum uint      `bson:"outgoing_seq_num,omitempty"`
 	// Indexed data.
 	BeginString      string `bson:"begin_string"`
 	SessionQualifier string `bson:"session_qualifier"`

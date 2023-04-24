@@ -210,7 +210,7 @@ func (f sessionFactory) newSession(
 
 	if settings.HasSetting(config.ResendRequestChunkSize) {
 		var chunkSize int
-		chunkSize, err = settings.IntSetting(config.ResendRequestChunkSize);
+		chunkSize, err = settings.IntSetting(config.ResendRequestChunkSize)
 		if err != nil {
 			return
 		}

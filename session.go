@@ -665,7 +665,6 @@ func (s *session) doReject(msg *Message, rej MessageRejectError) error {
 				// log.Println(FIXUInt(*refTagID))
 				// log.Println(FIXInt(*refTagID))
 
-
 				reply.Body.SetField(tagRefTagID, FIXInt(*refTagID))
 			}
 		}

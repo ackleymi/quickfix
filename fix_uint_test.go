@@ -36,7 +36,7 @@ func TestFIXUInt_Read(t *testing.T) {
 
 	err = field.Read([]byte("blah"))
 	assert.NotNil(t, err, "Unexpected error")
-	
+
 	err = field.Read([]byte("-5"))
 	assert.NotNil(t, err, "Unexpected error")
 }

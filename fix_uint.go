@@ -29,7 +29,6 @@ const (
 	ascii9 = 57
 )
 
-
 // atoi is similar to the function in strconv, but is tuned for ints appearing in FIX field types.
 func atoi(d []byte) (int, error) {
 	if d[0] == asciiMinus {
