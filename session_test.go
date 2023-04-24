@@ -180,13 +180,13 @@ func (s *SessionSuite) TestCheckTargetTooHigh() {
 	s.Require().NotNil(err, "missing sequence number should return error")
 	s.Equal(rejectReasonRequiredTagMissing, err.RejectReason())
 
-	msg.Header.SetField(tagMsgSeqNum, FIXInt(47))
+	msg.Header.SetField(tagMsgSeqNum, FIXUInt(47))
 	err = s.session.checkTargetTooHigh(msg)
 	s.Require().NotNil(err, "sequence number too high should return an error")
 	s.IsType(targetTooHigh{}, err)
 
 	// Spot on.
-	msg.Header.SetField(tagMsgSeqNum, FIXInt(45))
+	msg.Header.SetField(tagMsgSeqNum, FIXUInt(45))
 	s.Nil(s.session.checkTargetTooHigh(msg))
 }
 
@@ -233,13 +233,13 @@ func (s *SessionSuite) TestCheckTargetTooLow() {
 	s.Equal(rejectReasonRequiredTagMissing, err.RejectReason())
 
 	// Too low.
-	msg.Header.SetField(tagMsgSeqNum, FIXInt(43))
+	msg.Header.SetField(tagMsgSeqNum, FIXUInt(43))
 	err = s.session.checkTargetTooLow(msg)
 	s.NotNil(err, "sequence number too low should return error")
 	s.IsType(targetTooLow{}, err)
 
 	// Spot on.
-	msg.Header.SetField(tagMsgSeqNum, FIXInt(45))
+	msg.Header.SetField(tagMsgSeqNum, FIXUInt(45))
 	s.Nil(s.session.checkTargetTooLow(msg))
 }
 
@@ -249,8 +249,8 @@ func (s *SessionSuite) TestShouldSendReset() {
 		ResetOnLogon        bool
 		ResetOnDisconnect   bool
 		ResetOnLogout       bool
-		NextSenderMsgSeqNum int
-		NextTargetMsgSeqNum int
+		NextSenderMsgSeqNum uint
+		NextTargetMsgSeqNum uint
 		Expected            bool
 	}{
 		{BeginStringFIX40, true, false, false, 1, 1, false}, // ResetSeqNumFlag not available < fix41.

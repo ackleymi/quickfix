@@ -32,7 +32,7 @@ type QuickFIXSuite struct {
 type KnowsFieldMap interface {
 	Has(Tag) bool
 	GetString(Tag) (string, MessageRejectError)
-	GetInt(Tag) (int, MessageRejectError)
+	GetUInt(Tag) (uint, MessageRejectError)
 	GetField(Tag, FieldValueReader) MessageRejectError
 }
 
@@ -49,9 +49,9 @@ func (s *QuickFIXSuite) FieldEquals(tag Tag, expectedValue interface{}, fieldMap
 		s.Nil(err)
 		s.Equal(expected, val)
 	case int:
-		val, err := fieldMap.GetInt(tag)
+		val, err := fieldMap.GetUInt(tag)
 		s.Nil(err)
-		s.Equal(expected, val)
+		s.EqualValues(expected, val)
 	case bool:
 		var val FIXBoolean
 		err := fieldMap.GetField(tag, &val)
@@ -128,10 +128,10 @@ func (e *MockApp) FromApp(msg *Message, sessionID SessionID) (reject MessageReje
 }
 
 type MessageFactory struct {
-	seqNum int
+	seqNum uint
 }
 
-func (m *MessageFactory) SetNextSeqNum(next int) {
+func (m *MessageFactory) SetNextSeqNum(next uint) {
 	m.seqNum = next - 1
 }
 
@@ -143,7 +143,7 @@ func (m *MessageFactory) buildMessage(msgType string) *Message {
 		SetField(tagSenderCompID, FIXString("TW")).
 		SetField(tagTargetCompID, FIXString("ISLD")).
 		SetField(tagSendingTime, FIXUTCTimestamp{Time: time.Now()}).
-		SetField(tagMsgSeqNum, FIXInt(m.seqNum)).
+		SetField(tagMsgSeqNum, FIXUInt(m.seqNum)).
 		SetField(tagMsgType, FIXString(msgType))
 	return msg
 }
@@ -164,17 +164,17 @@ func (m *MessageFactory) Logon() *Message {
 	return m.buildMessage(string(msgTypeLogon))
 }
 
-func (m *MessageFactory) ResendRequest(beginSeqNo int) *Message {
+func (m *MessageFactory) ResendRequest(beginSeqNo uint) *Message {
 	msg := m.buildMessage(string(msgTypeResendRequest))
-	msg.Body.SetField(tagBeginSeqNo, FIXInt(beginSeqNo))
-	msg.Body.SetField(tagEndSeqNo, FIXInt(0))
+	msg.Body.SetField(tagBeginSeqNo, FIXUInt(beginSeqNo))
+	msg.Body.SetField(tagEndSeqNo, FIXUInt(0))
 
 	return msg
 }
 
-func (m *MessageFactory) SequenceReset(seqNo int) *Message {
+func (m *MessageFactory) SequenceReset(seqNo uint) *Message {
 	msg := m.buildMessage(string(msgTypeSequenceReset))
-	msg.Body.SetField(tagNewSeqNo, FIXInt(seqNo))
+	msg.Body.SetField(tagNewSeqNo, FIXUInt(seqNo))
 
 	return msg
 }
@@ -272,11 +272,11 @@ func (s *SessionSuiteRig) ExpectStoreReset() {
 	s.NextTargetMsgSeqNum(1)
 }
 
-func (s *SessionSuiteRig) NextTargetMsgSeqNum(expected int) {
+func (s *SessionSuiteRig) NextTargetMsgSeqNum(expected uint) {
 	s.Equal(expected, s.session.store.NextTargetMsgSeqNum(), "NextTargetMsgSeqNum should be %v ", expected)
 }
 
-func (s *SessionSuiteRig) NextSenderMsgSeqNum(expected int) {
+func (s *SessionSuiteRig) NextSenderMsgSeqNum(expected uint) {
 	s.Equal(expected, s.session.store.NextSenderMsgSeqNum(), "NextSenderMsgSeqNum should be %v", expected)
 }
 
@@ -288,7 +288,7 @@ func (s *SessionSuiteRig) IncrNextTargetMsgSeqNum() {
 	s.Require().Nil(s.session.store.IncrNextTargetMsgSeqNum())
 }
 
-func (s *SessionSuiteRig) NoMessagePersisted(seqNum int) {
+func (s *SessionSuiteRig) NoMessagePersisted(seqNum uint) {
 	persistedMessages, err := s.session.store.GetMessages(seqNum, seqNum)
 	s.Nil(err)
 	s.Empty(persistedMessages, "The message should not be persisted")
@@ -296,7 +296,7 @@ func (s *SessionSuiteRig) NoMessagePersisted(seqNum int) {
 
 func (s *SessionSuiteRig) MessagePersisted(msg *Message) {
 	var err error
-	seqNum, err := msg.Header.GetInt(tagMsgSeqNum)
+	seqNum, err := msg.Header.GetUInt(tagMsgSeqNum)
 	s.Nil(err, "message should have seq num")
 
 	persistedMessages, err := s.session.store.GetMessages(seqNum, seqNum)

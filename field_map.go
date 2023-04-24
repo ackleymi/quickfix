@@ -137,19 +137,19 @@ func (m FieldMap) GetBool(tag Tag) (bool, MessageRejectError) {
 	return bool(val), nil
 }
 
-// GetInt is a GetField wrapper for int fields.
-func (m FieldMap) GetInt(tag Tag) (int, MessageRejectError) {
+// GetUInt is a GetField wrapper for int fields.
+func (m FieldMap) GetUInt(tag Tag) (uint, MessageRejectError) {
 	bytes, err := m.GetBytes(tag)
 	if err != nil {
 		return 0, err
 	}
 
-	var val FIXInt
+	var val FIXUInt
 	if val.Read(bytes) != nil {
 		err = IncorrectDataFormatForValue(tag)
 	}
 
-	return int(val), err
+	return val.UInt(), err
 }
 
 // GetTime is a GetField wrapper for utc timestamp fields.
@@ -216,9 +216,9 @@ func (m *FieldMap) SetBool(tag Tag, value bool) *FieldMap {
 	return m.SetField(tag, FIXBoolean(value))
 }
 
-// SetInt is a SetField wrapper for int fields.
-func (m *FieldMap) SetInt(tag Tag, value int) *FieldMap {
-	v := FIXInt(value)
+// SetUInt is a SetField wrapper for uint fields.
+func (m *FieldMap) SetUInt(tag Tag, value uint) *FieldMap {
+	v := FIXUInt(value)
 	return m.SetBytes(tag, v.Write())
 }
 
@@ -335,11 +335,11 @@ func (m FieldMap) total() int {
 	return total
 }
 
-func (m FieldMap) length() int {
+func (m FieldMap) length() uint {
 	m.rwLock.RLock()
 	defer m.rwLock.RUnlock()
 
-	length := 0
+	var length uint
 	for _, fields := range m.tagLookup {
 		for _, tv := range fields {
 			switch tv.tag {

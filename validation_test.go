@@ -109,7 +109,7 @@ func createFIX40NewOrderSingle() *Message {
 	msg.Body.SetField(Tag(55), FIXString("A"))
 	msg.Body.SetField(Tag(54), FIXString("1"))
 	msg.Body.SetField(Tag(40), FIXString("1"))
-	msg.Body.SetField(Tag(38), FIXInt(5))
+	msg.Body.SetField(Tag(38), FIXUInt(5))
 	msg.Body.SetField(Tag(100), FIXString("0"))
 
 	msg.Trailer.SetField(tagCheckSum, FIXString("000"))
@@ -131,7 +131,7 @@ func createFIX43NewOrderSingle() *Message {
 	msg.Body.SetField(Tag(21), FIXString("1"))
 	msg.Body.SetField(Tag(55), FIXString("A"))
 	msg.Body.SetField(Tag(54), FIXString("1"))
-	msg.Body.SetField(Tag(38), FIXInt(5))
+	msg.Body.SetField(Tag(38), FIXUInt(5))
 	msg.Body.SetField(Tag(40), FIXString("1"))
 	msg.Body.SetField(Tag(60), FIXUTCTimestamp{Time: time.Now()})
 
@@ -478,9 +478,9 @@ func tcTagAppearsMoreThanOnce() validateTest {
 	tag := Tag(40)
 
 	return validateTest{
-		TestName:             "Tag appears more than once",
-		Validator:            validator,
-		MessageBytes:         []byte("8=FIX.4.09=10735=D34=249=TW52=20060102-15:04:0556=ISLD11=ID21=140=140=254=138=20055=INTC60=20060102-15:04:0510=234"),
+		TestName:  "Tag appears more than once",
+		Validator: validator,
+		MessageBytes: []byte("8=FIX.4.09=10735=D34=249=TW52=20060102-15:04:0556=ISLD11=ID21=140=140=254=138=20055=INTC60=20060102-15:04:0510=234"),
 		ExpectedRejectReason: rejectReasonTagAppearsMoreThanOnce,
 		ExpectedRefTagID:     &tag,
 	}
@@ -491,9 +491,9 @@ func tcFloatValidation() validateTest {
 	validator := NewValidator(defaultValidatorSettings, dict, nil)
 	tag := Tag(38)
 	return validateTest{
-		TestName:             "FloatValidation",
-		Validator:            validator,
-		MessageBytes:         []byte("8=FIX.4.29=10635=D34=249=TW52=20140329-22:38:4556=ISLD11=ID21=140=154=138=+200.0055=INTC60=20140329-22:38:4510=178"),
+		TestName:  "FloatValidation",
+		Validator: validator,
+		MessageBytes: []byte("8=FIX.4.29=10635=D34=249=TW52=20140329-22:38:4556=ISLD11=ID21=140=154=138=+200.0055=INTC60=20140329-22:38:4510=178"),
 		ExpectedRejectReason: rejectReasonIncorrectDataFormatForValue,
 		ExpectedRefTagID:     &tag,
 	}

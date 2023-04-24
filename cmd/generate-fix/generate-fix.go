@@ -141,10 +141,12 @@ func main() {
 			log.Fatalf("Error Parsing %v: %v", dataDictPath, err)
 		}
 		specs = append(specs, spec)
+		fmt.Println("found spec at " + dataDictPath)
 	}
 
 	internal.BuildGlobalFieldTypes(specs)
 
+	internal.NewBar()
 	waitGroup.Add(1)
 	go genTags()
 	waitGroup.Add(1)
@@ -186,8 +188,16 @@ func main() {
 	}()
 
 	var h internal.ErrorHandler
+	var idx int
 	for err := range errors {
+		if idx == 0 {
+			internal.FinishBar()
+			idx++
+		}
 		h.Handle(err)
+	}
+	if idx == 0 {
+		internal.FinishBar()
 	}
 
 	os.Exit(h.ReturnCode)

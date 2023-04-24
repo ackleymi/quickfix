@@ -140,13 +140,13 @@ func (s *session) fillDefaultHeader(msg *Message, inReplyTo *Message) {
 
 	if s.EnableLastMsgSeqNumProcessed {
 		if inReplyTo != nil {
-			if lastSeqNum, err := inReplyTo.Header.GetInt(tagMsgSeqNum); err != nil {
+			if lastSeqNum, err := inReplyTo.Header.GetUInt(tagMsgSeqNum); err != nil {
 				s.logError(err)
 			} else {
-				msg.Header.SetInt(tagLastMsgSeqNumProcessed, lastSeqNum)
+				msg.Header.SetUInt(tagLastMsgSeqNumProcessed, lastSeqNum)
 			}
 		} else {
-			msg.Header.SetInt(tagLastMsgSeqNumProcessed, s.store.NextTargetMsgSeqNum()-1)
+			msg.Header.SetUInt(tagLastMsgSeqNumProcessed, s.store.NextTargetMsgSeqNum()-1)
 		}
 	}
 }
@@ -171,7 +171,7 @@ func (s *session) sendLogonInReplyTo(setResetSeqNum bool, inReplyTo *Message) er
 	logon.Header.SetField(tagTargetCompID, FIXString(s.sessionID.TargetCompID))
 	logon.Header.SetField(tagSenderCompID, FIXString(s.sessionID.SenderCompID))
 	logon.Body.SetField(tagEncryptMethod, FIXString("0"))
-	logon.Body.SetField(tagHeartBtInt, FIXInt(s.HeartBtInt.Seconds()))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(s.HeartBtInt.Seconds()))
 
 	if setResetSeqNum {
 		logon.Body.SetField(tagResetSeqNumFlag, FIXBoolean(true))
@@ -298,7 +298,7 @@ func (s *session) dropAndSendInReplyTo(msg *Message, inReplyTo *Message) error {
 func (s *session) prepMessageForSend(msg *Message, inReplyTo *Message) (msgBytes []byte, err error) {
 	s.fillDefaultHeader(msg, inReplyTo)
 	seqNum := s.store.NextSenderMsgSeqNum()
-	msg.Header.SetField(tagMsgSeqNum, FIXInt(seqNum))
+	msg.Header.SetField(tagMsgSeqNum, FIXUInt(seqNum))
 
 	msgType, err := msg.Header.GetBytes(tagMsgType)
 	if err != nil {
@@ -323,7 +323,7 @@ func (s *session) prepMessageForSend(msg *Message, inReplyTo *Message) (msgBytes
 
 				s.sentReset = true
 				seqNum = s.store.NextSenderMsgSeqNum()
-				msg.Header.SetField(tagMsgSeqNum, FIXInt(seqNum))
+				msg.Header.SetField(tagMsgSeqNum, FIXUInt(seqNum))
 			}
 		}
 	} else {
@@ -338,7 +338,7 @@ func (s *session) prepMessageForSend(msg *Message, inReplyTo *Message) (msgBytes
 	return
 }
 
-func (s *session) persist(seqNum int, msgBytes []byte) error {
+func (s *session) persist(seqNum uint, msgBytes []byte) error {
 	if !s.DisableMessagePersist {
 		return s.store.SaveMessageAndIncrNextSenderMsgSeqNum(seqNum, msgBytes)
 	}
@@ -377,14 +377,14 @@ func (s *session) doTargetTooHigh(reject targetTooHigh) (nextState resendState, 
 	return s.sendResendRequest(reject.ExpectedTarget, reject.ReceivedTarget-1)
 }
 
-func (s *session) sendResendRequest(beginSeq, endSeq int) (nextState resendState, err error) {
+func (s *session) sendResendRequest(beginSeq, endSeq uint) (nextState resendState, err error) {
 	nextState.resendRangeEnd = endSeq
 
 	resend := NewMessage()
 	resend.Header.SetBytes(tagMsgType, msgTypeResendRequest)
-	resend.Body.SetField(tagBeginSeqNo, FIXInt(beginSeq))
+	resend.Body.SetField(tagBeginSeqNo, FIXUInt(beginSeq))
 
-	var endSeqNo int
+	var endSeqNo uint
 	if s.ResendRequestChunkSize != 0 {
 		endSeqNo = beginSeq + s.ResendRequestChunkSize - 1
 	} else {
@@ -400,7 +400,7 @@ func (s *session) sendResendRequest(beginSeq, endSeq int) (nextState resendState
 			endSeqNo = 0
 		}
 	}
-	resend.Body.SetField(tagEndSeqNo, FIXInt(endSeqNo))
+	resend.Body.SetField(tagEndSeqNo, FIXUInt(endSeqNo))
 
 	if err = s.send(resend); err != nil {
 		return
@@ -458,7 +458,7 @@ func (s *session) handleLogon(msg *Message) error {
 
 	if !s.InitiateLogon {
 		if !s.HeartBtIntOverride {
-			var heartBtInt FIXInt
+			var heartBtInt FIXUInt
 			if err := msg.Body.GetField(tagHeartBtInt, &heartBtInt); err == nil {
 				s.HeartBtInt = time.Duration(heartBtInt) * time.Second
 			}
@@ -559,7 +559,7 @@ func (s *session) checkTargetTooLow(msg *Message) MessageRejectError {
 		return RequiredTagMissing(tagMsgSeqNum)
 	}
 
-	seqNum, err := msg.Header.GetInt(tagMsgSeqNum)
+	seqNum, err := msg.Header.GetUInt(tagMsgSeqNum)
 	if err != nil {
 		return err
 	}
@@ -576,7 +576,7 @@ func (s *session) checkTargetTooHigh(msg *Message) MessageRejectError {
 		return RequiredTagMissing(tagMsgSeqNum)
 	}
 
-	seqNum, err := msg.Header.GetInt(tagMsgSeqNum)
+	seqNum, err := msg.Header.GetUInt(tagMsgSeqNum)
 	if err != nil {
 		return err
 	}
@@ -647,7 +647,7 @@ func (s *session) doReject(msg *Message, rej MessageRejectError) error {
 
 		if rej.IsBusinessReject() {
 			reply.Header.SetField(tagMsgType, FIXString("j"))
-			reply.Body.SetField(tagBusinessRejectReason, FIXInt(rej.RejectReason()))
+			reply.Body.SetField(tagBusinessRejectReason, FIXUInt(rej.RejectReason()))
 			if refID := rej.BusinessRejectRefID(); refID != "" {
 				reply.Body.SetField(tagBusinessRejectRefID, FIXString(refID))
 			}
@@ -655,12 +655,17 @@ func (s *session) doReject(msg *Message, rej MessageRejectError) error {
 			reply.Header.SetField(tagMsgType, FIXString("3"))
 			switch {
 			default:
-				reply.Body.SetField(tagSessionRejectReason, FIXInt(rej.RejectReason()))
+				reply.Body.SetField(tagSessionRejectReason, FIXUInt(rej.RejectReason()))
 			case rej.RejectReason() > rejectReasonInvalidMsgType && s.sessionID.BeginString == BeginStringFIX42:
 				// Fix42 knows up to invalid msg type.
 			}
 
 			if refTagID := rej.RefTagID(); refTagID != nil {
+				// log.Println(*refTagID)
+				// log.Println(FIXUInt(*refTagID))
+				// log.Println(FIXInt(*refTagID))
+
+
 				reply.Body.SetField(tagRefTagID, FIXInt(*refTagID))
 			}
 		}
@@ -680,7 +685,7 @@ func (s *session) doReject(msg *Message, rej MessageRejectError) error {
 		}
 	}
 
-	seqNum := new(FIXInt)
+	seqNum := new(FIXUInt)
 	if err := msg.Header.GetField(tagMsgSeqNum, seqNum); err == nil {
 		reply.Body.SetField(tagRefSeqNum, seqNum)
 	}

@@ -23,20 +23,20 @@ import (
 
 // The MessageStore interface provides methods to record and retrieve messages for resend purposes.
 type MessageStore interface {
-	NextSenderMsgSeqNum() int
-	NextTargetMsgSeqNum() int
+	NextSenderMsgSeqNum() uint
+	NextTargetMsgSeqNum() uint
 
 	IncrNextSenderMsgSeqNum() error
 	IncrNextTargetMsgSeqNum() error
 
-	SetNextSenderMsgSeqNum(next int) error
-	SetNextTargetMsgSeqNum(next int) error
+	SetNextSenderMsgSeqNum(next uint) error
+	SetNextTargetMsgSeqNum(next uint) error
 
 	CreationTime() time.Time
 
-	SaveMessage(seqNum int, msg []byte) error
-	SaveMessageAndIncrNextSenderMsgSeqNum(seqNum int, msg []byte) error
-	GetMessages(beginSeqNum, endSeqNum int) ([][]byte, error)
+	SaveMessage(seqNum uint, msg []byte) error
+	SaveMessageAndIncrNextSenderMsgSeqNum(seqNum uint, msg []byte) error
+	GetMessages(beginSeqNum, endSeqNum uint) ([][]byte, error)
 
 	Refresh() error
 	Reset() error
@@ -50,16 +50,16 @@ type MessageStoreFactory interface {
 }
 
 type memoryStore struct {
-	senderMsgSeqNum, targetMsgSeqNum int
+	senderMsgSeqNum, targetMsgSeqNum uint
 	creationTime                     time.Time
-	messageMap                       map[int][]byte
+	messageMap                       map[uint][]byte
 }
 
-func (store *memoryStore) NextSenderMsgSeqNum() int {
+func (store *memoryStore) NextSenderMsgSeqNum() uint {
 	return store.senderMsgSeqNum + 1
 }
 
-func (store *memoryStore) NextTargetMsgSeqNum() int {
+func (store *memoryStore) NextTargetMsgSeqNum() uint {
 	return store.targetMsgSeqNum + 1
 }
 
@@ -73,11 +73,11 @@ func (store *memoryStore) IncrNextTargetMsgSeqNum() error {
 	return nil
 }
 
-func (store *memoryStore) SetNextSenderMsgSeqNum(nextSeqNum int) error {
+func (store *memoryStore) SetNextSenderMsgSeqNum(nextSeqNum uint) error {
 	store.senderMsgSeqNum = nextSeqNum - 1
 	return nil
 }
-func (store *memoryStore) SetNextTargetMsgSeqNum(nextSeqNum int) error {
+func (store *memoryStore) SetNextTargetMsgSeqNum(nextSeqNum uint) error {
 	store.targetMsgSeqNum = nextSeqNum - 1
 	return nil
 }
@@ -104,16 +104,16 @@ func (store *memoryStore) Close() error {
 	return nil
 }
 
-func (store *memoryStore) SaveMessage(seqNum int, msg []byte) error {
+func (store *memoryStore) SaveMessage(seqNum uint, msg []byte) error {
 	if store.messageMap == nil {
-		store.messageMap = make(map[int][]byte)
+		store.messageMap = make(map[uint][]byte)
 	}
 
 	store.messageMap[seqNum] = msg
 	return nil
 }
 
-func (store *memoryStore) SaveMessageAndIncrNextSenderMsgSeqNum(seqNum int, msg []byte) error {
+func (store *memoryStore) SaveMessageAndIncrNextSenderMsgSeqNum(seqNum uint, msg []byte) error {
 	err := store.SaveMessage(seqNum, msg)
 	if err != nil {
 		return err
@@ -121,7 +121,7 @@ func (store *memoryStore) SaveMessageAndIncrNextSenderMsgSeqNum(seqNum int, msg 
 	return store.IncrNextSenderMsgSeqNum()
 }
 
-func (store *memoryStore) GetMessages(beginSeqNum, endSeqNum int) ([][]byte, error) {
+func (store *memoryStore) GetMessages(beginSeqNum, endSeqNum uint) ([][]byte, error) {
 	var msgs [][]byte
 	for seqNum := beginSeqNum; seqNum <= endSeqNum; seqNum++ {
 		if m, ok := store.messageMap[seqNum]; ok {

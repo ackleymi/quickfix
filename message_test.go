@@ -202,8 +202,8 @@ func (s *MessageSuite) TestCopyIntoMessage() {
 	dest := NewMessage()
 	s.msg.CopyInto(dest)
 
-	checkFieldInt(s, dest.Header.FieldMap, int(tagMsgSeqNum), 2)
-	checkFieldInt(s, dest.Body.FieldMap, 21, 3)
+	checkFieldUInt(s, dest.Header.FieldMap, int(tagMsgSeqNum), 2)
+	checkFieldUInt(s, dest.Body.FieldMap, 21, 3)
 	checkFieldString(s, dest.Body.FieldMap, 11, "ID")
 	s.Equal(len(dest.bodyBytes), len(s.msg.bodyBytes))
 
@@ -230,8 +230,8 @@ func (s *MessageSuite) TestCopyIntoMessage() {
 	s.Equal(dest.String(), renderedString)
 }
 
-func checkFieldInt(s *MessageSuite, fields FieldMap, tag, expected int) {
-	toCheck, _ := fields.GetInt(Tag(tag))
+func checkFieldUInt(s *MessageSuite, fields FieldMap, tag int, expected uint) {
+	toCheck, _ := fields.GetUInt(Tag(tag))
 	s.Equal(expected, toCheck)
 }
 

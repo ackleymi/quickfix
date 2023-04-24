@@ -46,7 +46,7 @@ func (h *ErrorHandler) Handle(err error) {
 	}
 }
 
-func write(filePath string, fset *token.FileSet, f *ast.File) error {
+func write(filePath string, fset *token.FileSet, f *ast.File, size int) error {
 	if parentdir := path.Dir(filePath); parentdir != "." {
 		if err := os.MkdirAll(parentdir, os.ModePerm); err != nil {
 			return err
@@ -59,9 +59,19 @@ func write(filePath string, fset *token.FileSet, f *ast.File) error {
 	}
 
 	ast.SortImports(fset, f)
+	addToBar(int64(size))
 	err = (&printer.Config{Mode: printerMode, Tabwidth: tabWidth}).Fprint(file, fset, f)
-	_ = file.Close()
-	return err
+	closeErr := file.Close()
+	printBar(int64(size), filePath)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	if closeErr != nil {
+		return closeErr
+	}
+	return nil
 }
 
 //WriteFile parses the generated code in fileOut and writes the code out to filePath.
@@ -75,7 +85,7 @@ func WriteFile(filePath, fileOut string) error {
 	}
 
 	//write out the file regardless of parseFile errors
-	if err := write(filePath, fset, f); err != nil {
+	if err := write(filePath, fset, f, len(fileOut)); err != nil {
 		return err
 	}
 

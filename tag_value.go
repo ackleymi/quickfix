@@ -75,6 +75,6 @@ func (tv TagValue) total() int {
 	return total
 }
 
-func (tv TagValue) length() int {
-	return len(tv.bytes)
+func (tv TagValue) length() uint {
+	return uint(len(tv.bytes))
 }

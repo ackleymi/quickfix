@@ -66,37 +66,37 @@ func (p *parser) readMore() (int, error) {
 	return n, e
 }
 
-func (p *parser) findIndex(delim []byte) (int, error) {
+func (p *parser) findIndex(delim []byte) (uint, error) {
 	return p.findIndexAfterOffset(0, delim)
 }
 
-func (p *parser) findIndexAfterOffset(offset int, delim []byte) (int, error) {
+func (p *parser) findIndexAfterOffset(offset uint, delim []byte) (uint, error) {
 	for {
-		if offset > len(p.buffer) {
+		if offset > uint(len(p.buffer)) {
 			if n, err := p.readMore(); n == 0 && err != nil {
-				return -1, err
+				return 0, err
 			}
 
 			continue
 		}
 
 		if index := bytes.Index(p.buffer[offset:], delim); index != -1 {
-			return index + offset, nil
+			return uint(index) + offset, nil
 		}
 
 		n, err := p.readMore()
 
 		if n == 0 && err != nil {
-			return -1, err
+			return 0, err
 		}
 	}
 }
 
-func (p *parser) findStart() (int, error) {
+func (p *parser) findStart() (uint, error) {
 	return p.findIndex([]byte("8="))
 }
 
-func (p *parser) findEndAfterOffset(offset int) (int, error) {
+func (p *parser) findEndAfterOffset(offset uint) (uint, error) {
 	index, err := p.findIndexAfterOffset(offset, []byte("\00110="))
 	if err != nil {
 		return index, err
@@ -110,7 +110,7 @@ func (p *parser) findEndAfterOffset(offset int) (int, error) {
 	return index + 1, nil
 }
 
-func (p *parser) jumpLength() (int, error) {
+func (p *parser) jumpLength() (uint, error) {
 	lengthIndex, err := p.findIndex([]byte("9="))
 	if err != nil {
 		return 0, err
@@ -127,7 +127,7 @@ func (p *parser) jumpLength() (int, error) {
 		return 0, errors.New("No length given")
 	}
 
-	length, err := atoi(p.buffer[lengthIndex:offset])
+	length, err := atoui(p.buffer[lengthIndex:offset])
 	if err != nil {
 		return length, err
 	}
@@ -136,7 +136,7 @@ func (p *parser) jumpLength() (int, error) {
 		return length, errors.New("Invalid length")
 	}
 
-	return offset + length, nil
+	return uint(offset) + length, nil
 }
 
 func (p *parser) ReadMessage() (msgBytes *bytes.Buffer, err error) {

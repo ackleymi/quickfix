@@ -209,9 +209,12 @@ func (f sessionFactory) newSession(
 	}
 
 	if settings.HasSetting(config.ResendRequestChunkSize) {
-		if s.ResendRequestChunkSize, err = settings.IntSetting(config.ResendRequestChunkSize); err != nil {
+		var chunkSize int
+		chunkSize, err = settings.IntSetting(config.ResendRequestChunkSize);
+		if err != nil {
 			return
 		}
+		s.ResendRequestChunkSize = uint(chunkSize)
 	}
 
 	if settings.HasSetting(config.StartTime) || settings.HasSetting(config.EndTime) {

@@ -205,7 +205,7 @@ func ParseMessageWithDataDictionary(
 		return
 	}
 
-	xmlDataLen := 0
+	var xmlDataLen uint
 	xmlDataMsg := false
 
 	msg.Header.add(msg.fields[fieldIndex : fieldIndex+1])
@@ -245,7 +245,7 @@ func ParseMessageWithDataDictionary(
 		}
 
 		if parsedFieldBytes.tag == tagXMLDataLen {
-			xmlDataLen, _ = msg.Header.GetInt(tagXMLDataLen)
+			xmlDataLen, _ = msg.Header.GetUInt(tagXMLDataLen)
 		}
 		fieldIndex++
 	}
@@ -255,7 +255,7 @@ func ParseMessageWithDataDictionary(
 		msg.bodyBytes = msg.bodyBytes[:len(msg.bodyBytes)-len(trailerBytes)]
 	}
 
-	length := 0
+	var length uint
 	for _, field := range msg.fields {
 		switch field.tag {
 		case tagBeginString, tagBodyLength, tagCheckSum: // Tags do not contribute to length.
@@ -264,10 +264,10 @@ func ParseMessageWithDataDictionary(
 		}
 	}
 
-	bodyLength, err := msg.Header.GetInt(tagBodyLength)
+	bodyLength, err := msg.Header.GetUInt(tagBodyLength)
 	if err != nil {
 		err = parseError{OrigError: err.Error()}
-	} else if length != bodyLength && !xmlDataMsg {
+	} else if uint(length) != bodyLength && !xmlDataMsg {
 		err = parseError{OrigError: fmt.Sprintf("Incorrect Message Length, expected %d, got %d", bodyLength, length)}
 	}
 
@@ -365,13 +365,14 @@ func extractSpecificField(field *TagValue, expectedTag Tag, buffer []byte) (remB
 	return
 }
 
-func extractXMLDataField(parsedFieldBytes *TagValue, buffer []byte, dataLen int) (remBytes []byte, err error) {
-	endIndex := bytes.IndexByte(buffer, '=')
-	if endIndex == -1 {
+func extractXMLDataField(parsedFieldBytes *TagValue, buffer []byte, dataLen uint) (remBytes []byte, err error) {
+	endIdx := bytes.IndexByte(buffer, '=')
+	if endIdx == -1 {
 		err = parseError{OrigError: "extractField: No Trailing Delim in " + string(buffer)}
 		remBytes = buffer
 		return
 	}
+	endIndex := uint(endIdx)
 	endIndex += dataLen + 1
 
 	err = parsedFieldBytes.parse(buffer[:endIndex+1])
@@ -415,7 +416,7 @@ func (m *Message) build() []byte {
 
 func (m *Message) cook() {
 	bodyLength := m.Header.length() + m.Body.length() + m.Trailer.length()
-	m.Header.SetInt(tagBodyLength, bodyLength)
+	m.Header.SetUInt(tagBodyLength, bodyLength)
 	checkSum := (m.Header.total() + m.Body.total() + m.Trailer.total()) % 256
 	m.Trailer.SetString(tagCheckSum, formatCheckSum(checkSum))
 }

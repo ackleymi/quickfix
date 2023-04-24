@@ -73,9 +73,9 @@ func TestFieldMap_Length(t *testing.T) {
 	fMap.SetField(1, FIXString("hello"))
 	fMap.SetField(2, FIXString("world"))
 	fMap.SetField(8, FIXString("FIX.4.4"))
-	fMap.SetField(9, FIXInt(100))
+	fMap.SetField(9, FIXUInt(100))
 	fMap.SetField(10, FIXString("100"))
-	assert.Equal(t, 16, fMap.length(), "Length should include all fields but beginString, bodyLength, and checkSum")
+	assert.EqualValues(t, 16, fMap.length(), "Length should include all fields but beginString, bodyLength, and checkSum")
 }
 
 func TestFieldMap_Total(t *testing.T) {
@@ -85,7 +85,7 @@ func TestFieldMap_Total(t *testing.T) {
 	fMap.SetField(1, FIXString("hello"))
 	fMap.SetField(2, FIXString("world"))
 	fMap.SetField(8, FIXString("FIX.4.4"))
-	fMap.SetField(Tag(9), FIXInt(100))
+	fMap.SetField(Tag(9), FIXUInt(100))
 	fMap.SetField(10, FIXString("100"))
 
 	assert.Equal(t, 2116, fMap.total(), "Total should includes all fields but checkSum")
@@ -96,17 +96,17 @@ func TestFieldMap_TypedSetAndGet(t *testing.T) {
 	fMap.init()
 
 	fMap.SetString(1, "hello")
-	fMap.SetInt(2, 256)
+	fMap.SetUInt(2, 256)
 
 	s, err := fMap.GetString(1)
 	assert.Nil(t, err)
 	assert.Equal(t, "hello", s)
 
-	i, err := fMap.GetInt(2)
+	i, err := fMap.GetUInt(2)
 	assert.Nil(t, err)
-	assert.Equal(t, 256, i)
+	assert.EqualValues(t, 256, i)
 
-	_, err = fMap.GetInt(1)
+	_, err = fMap.GetUInt(1)
 	assert.NotNil(t, err, "Type mismatch should occur error")
 
 	s, err = fMap.GetString(2)

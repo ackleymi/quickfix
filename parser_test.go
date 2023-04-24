@@ -67,7 +67,7 @@ func (s *ParserSuite) TestJumpLength() {
 	s.Nil(err)
 
 	expectedIndex := 111 + 17 - 1
-	s.Equal(expectedIndex, index)
+	s.EqualValues(expectedIndex, index)
 }
 
 func (s *ParserSuite) TestBadLength() {
@@ -101,7 +101,7 @@ func (s *ParserSuite) TestFindStart() {
 		}
 
 		s.Nil(err)
-		s.Equal(tc.expectedStart, start)
+		s.EqualValues(tc.expectedStart, start)
 	}
 }
 

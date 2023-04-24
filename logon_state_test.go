@@ -87,7 +87,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogon() {
 	s.IncrNextTargetMsgSeqNum()
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 
 	s.MockApp.On("FromAdmin").Return(nil)
 	s.MockApp.On("OnLogon")
@@ -115,7 +115,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonHeartBtIntOverride() {
 	s.IncrNextTargetMsgSeqNum()
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 
 	s.MockApp.On("FromAdmin").Return(nil)
 	s.MockApp.On("OnLogon")
@@ -146,7 +146,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonEnableLastMsgSeqNumProcessed() {
 	s.IncrNextTargetMsgSeqNum()
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 
 	s.MockApp.On("FromAdmin").Return(nil)
 	s.MockApp.On("OnLogon")
@@ -164,7 +164,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonResetSeqNum() {
 	s.IncrNextTargetMsgSeqNum()
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 	logon.Body.SetField(tagResetSeqNumFlag, FIXBoolean(true))
 
 	s.MockApp.On("FromAdmin").Return(nil)
@@ -193,7 +193,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonInitiateLogon() {
 	s.IncrNextTargetMsgSeqNum()
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 
 	s.MockApp.On("FromAdmin").Return(nil)
 	s.MockApp.On("OnLogon")
@@ -212,7 +212,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonInitiateLogonExpectResetSeqNum() 
 	s.Require().Nil(s.store.IncrNextSenderMsgSeqNum())
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 	logon.Body.SetField(tagResetSeqNumFlag, FIXBoolean(true))
 
 	s.MockApp.On("FromAdmin").Return(nil)
@@ -233,7 +233,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonInitiateLogonUnExpectedResetSeqNu
 	s.IncrNextSenderMsgSeqNum()
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 	logon.Body.SetField(tagResetSeqNumFlag, FIXBoolean(true))
 
 	s.MockApp.On("FromAdmin").Return(nil)
@@ -255,7 +255,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonRefreshOnLogon() {
 		s.session.RefreshOnLogon = doRefresh
 
 		logon := s.Logon()
-		logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+		logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 
 		if doRefresh {
 			s.MockStore.On("Refresh").Return(nil)
@@ -293,7 +293,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonRejectLogon() {
 	s.IncrNextTargetMsgSeqNum()
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 
 	s.MockApp.On("FromAdmin").Return(RejectLogon{"reject message"})
 	s.MockApp.On("ToAdmin")
@@ -314,7 +314,7 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonRejectLogon() {
 func (s *LogonStateTestSuite) TestFixMsgInLogonSeqNumTooHigh() {
 	s.MessageFactory.SetNextSeqNum(6)
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
 
 	s.MockApp.On("FromAdmin").Return(nil)
 	s.MockApp.On("OnLogon")
@@ -355,8 +355,8 @@ func (s *LogonStateTestSuite) TestFixMsgInLogonSeqNumTooLow() {
 	s.IncrNextTargetMsgSeqNum()
 
 	logon := s.Logon()
-	logon.Body.SetField(tagHeartBtInt, FIXInt(32))
-	logon.Header.SetInt(tagMsgSeqNum, 1)
+	logon.Body.SetField(tagHeartBtInt, FIXUInt(32))
+	logon.Header.SetUInt(tagMsgSeqNum, 1)
 
 	s.MockApp.On("ToAdmin")
 	s.NextTargetMsgSeqNum(2)

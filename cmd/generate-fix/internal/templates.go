@@ -372,8 +372,8 @@ func (f {{ .Name }}Field) Value() ({{ quickfixValueType $base_type }}) {
  return f.String() }
 {{- else if eq $base_type "FIXBoolean" -}}
  return f.Bool() }
-{{- else if eq $base_type "FIXInt" -}}
- return f.Int() }
+{{- else if eq $base_type "FIXUInt" -}}
+ return f.UInt() }
 {{- else if eq $base_type "FIXUTCTimestamp" -}}
  return f.Time }
 {{- else if eq $base_type "FIXFloat" -}}

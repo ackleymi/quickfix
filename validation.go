@@ -211,7 +211,7 @@ func validateVisitField(fieldDef *datadictionary.FieldDef, fields []TagValue) ([
 
 func validateVisitGroupField(fieldDef *datadictionary.FieldDef, fieldStack []TagValue) ([]TagValue, MessageRejectError) {
 	numInGroupTag := fieldStack[0].tag
-	var numInGroup FIXInt
+	var numInGroup FIXUInt
 
 	if err := numInGroup.Read(fieldStack[0].value); err != nil {
 		return nil, IncorrectDataFormatForValue(numInGroupTag)
@@ -389,7 +389,7 @@ func validateField(d *datadictionary.DataDictionary, validFields datadictionary.
 	case "SEQNUM":
 		fallthrough
 	case "INT":
-		prototype = new(FIXInt)
+		prototype = new(FIXUInt)
 
 	case "UTCTIMESTAMP", "TIME":
 		prototype = new(FIXUTCTimestamp)

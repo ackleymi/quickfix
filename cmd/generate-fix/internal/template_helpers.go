@@ -172,8 +172,8 @@ func quickfixValueType(quickfixType string) (goType string, err error) {
 		goType = "string"
 	case "FIXBoolean":
 		goType = "bool"
-	case "FIXInt":
-		goType = "int"
+	case "FIXUInt":
+		goType = "uint"
 	case "FIXUTCTimestamp":
 		goType = "time.Time"
 	case "FIXFloat":
@@ -240,7 +240,7 @@ func quickfixType(field *datadictionary.FieldType) (quickfixType string, err err
 	case "SEQNUM":
 		fallthrough
 	case "INT":
-		quickfixType = "FIXInt"
+		quickfixType = "FIXUInt"
 
 	case "UTCTIMESTAMP":
 		quickfixType = "FIXUTCTimestamp"

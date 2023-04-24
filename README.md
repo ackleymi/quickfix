@@ -108,7 +108,7 @@ If you wish to work on QuickFIX/Go itself, you will need [Docker](https://docs.d
 * Click the pop-up to re-open the project in the Dev Container
 * This opens the project in a docker container pre-configured with everything you need
 
-### Build and Test
+### Build and Run Unit Tests
 
 The default make target runs [go vet](https://godoc.org/golang.org/x/tools/cmd/vet) and unit tests.
 
@@ -137,13 +137,13 @@ QuickFIX/Go acceptance tests depend on ruby in path, if you are using the dev co
 To run acceptance tests,
 
 ```sh
-# generate code locally
+# run the generator located in the cmd/ directory and outputs the suite of static FIX packages for every version into the gen/ directory
 make generate
 
 # build acceptance test rig
 make build-test-srv
 
-# run acceptance tests
+# run acceptance test suite against the generated packages
 make accept
 ```
 

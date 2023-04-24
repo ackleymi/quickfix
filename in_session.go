@@ -149,14 +149,14 @@ func (state inSession) handleSequenceReset(session *session, msg *Message) (next
 		return state.processReject(session, msg, err)
 	}
 
-	var newSeqNo FIXInt
+	var newSeqNo FIXUInt
 	if err := msg.Body.GetField(tagNewSeqNo, &newSeqNo); err == nil {
-		expectedSeqNum := FIXInt(session.store.NextTargetMsgSeqNum())
+		expectedSeqNum := FIXUInt(session.store.NextTargetMsgSeqNum())
 		session.log.OnEventf("Received SequenceReset FROM: %v TO: %v", expectedSeqNum, newSeqNo)
 
 		switch {
 		case newSeqNo > expectedSeqNum:
-			if err := session.store.SetNextTargetMsgSeqNum(int(newSeqNo)); err != nil {
+			if err := session.store.SetNextTargetMsgSeqNum(newSeqNo.UInt()); err != nil {
 				return handleStateError(session, err)
 			}
 		case newSeqNo < expectedSeqNum:
@@ -175,19 +175,19 @@ func (state inSession) handleResendRequest(session *session, msg *Message) (next
 	}
 
 	var err error
-	var beginSeqNoField FIXInt
+	var beginSeqNoField FIXUInt
 	if err = msg.Body.GetField(tagBeginSeqNo, &beginSeqNoField); err != nil {
 		return state.processReject(session, msg, RequiredTagMissing(tagBeginSeqNo))
 	}
 
 	beginSeqNo := beginSeqNoField
 
-	var endSeqNoField FIXInt
+	var endSeqNoField FIXUInt
 	if err = msg.Body.GetField(tagEndSeqNo, &endSeqNoField); err != nil {
 		return state.processReject(session, msg, RequiredTagMissing(tagEndSeqNo))
 	}
 
-	endSeqNo := int(endSeqNoField)
+	endSeqNo := uint(endSeqNoField)
 
 	session.log.OnEventf("Received ResendRequest FROM: %d TO: %d", beginSeqNo, endSeqNo)
 	expectedSeqNum := session.store.NextSenderMsgSeqNum()
@@ -198,7 +198,7 @@ func (state inSession) handleResendRequest(session *session, msg *Message) (next
 		endSeqNo = expectedSeqNum - 1
 	}
 
-	if err := state.resendMessages(session, int(beginSeqNo), endSeqNo, *msg); err != nil {
+	if err := state.resendMessages(session, beginSeqNo.UInt(), endSeqNo, *msg); err != nil {
 		return handleStateError(session, err)
 	}
 
@@ -216,7 +216,7 @@ func (state inSession) handleResendRequest(session *session, msg *Message) (next
 	return state
 }
 
-func (state inSession) resendMessages(session *session, beginSeqNo, endSeqNo int, inReplyTo Message) (err error) {
+func (state inSession) resendMessages(session *session, beginSeqNo, endSeqNo uint, inReplyTo Message) (err error) {
 	if session.DisableMessagePersist {
 		err = state.generateSequenceReset(session, beginSeqNo, endSeqNo+1, inReplyTo)
 		return
@@ -234,7 +234,7 @@ func (state inSession) resendMessages(session *session, beginSeqNo, endSeqNo int
 	for _, msgBytes := range msgs {
 		_ = ParseMessageWithDataDictionary(msg, bytes.NewBuffer(msgBytes), session.transportDataDictionary, session.appDataDictionary)
 		msgType, _ := msg.Header.GetBytes(tagMsgType)
-		sentMessageSeqNum, _ := msg.Header.GetInt(tagMsgSeqNum)
+		sentMessageSeqNum, _ := msg.Header.GetUInt(tagMsgSeqNum)
 
 		if isAdminMessageType(msgType) {
 			nextSeqNum = sentMessageSeqNum + 1
@@ -286,7 +286,7 @@ func (state inSession) processReject(session *session, msg *Message, rej Message
 		}
 
 		if nextState.messageStash == nil {
-			nextState.messageStash = make(map[int]*Message)
+			nextState.messageStash = make(map[uint]*Message)
 		}
 
 		nextState.messageStash[TypedError.ReceivedTarget] = msg
@@ -378,14 +378,14 @@ func (state inSession) doTargetTooLow(session *session, msg *Message, rej target
 	return state
 }
 
-func (state *inSession) generateSequenceReset(session *session, beginSeqNo int, endSeqNo int, inReplyTo Message) (err error) {
+func (state *inSession) generateSequenceReset(session *session, beginSeqNo uint, endSeqNo uint, inReplyTo Message) (err error) {
 	sequenceReset := NewMessage()
 	session.fillDefaultHeader(sequenceReset, &inReplyTo)
 
 	sequenceReset.Header.SetField(tagMsgType, FIXString("4"))
-	sequenceReset.Header.SetField(tagMsgSeqNum, FIXInt(beginSeqNo))
+	sequenceReset.Header.SetField(tagMsgSeqNum, FIXUInt(beginSeqNo))
 	sequenceReset.Header.SetField(tagPossDupFlag, FIXBoolean(true))
-	sequenceReset.Body.SetField(tagNewSeqNo, FIXInt(endSeqNo))
+	sequenceReset.Body.SetField(tagNewSeqNo, FIXUInt(endSeqNo))
 	sequenceReset.Body.SetField(tagGapFillFlag, FIXBoolean(true))
 
 	var origSendingTime FIXString

@@ -78,7 +78,7 @@ func TestTagValue_length(t *testing.T) {
 	stringField := "8=FIX.4.0"
 	var tv TagValue
 	require.Nil(t, tv.parse([]byte(stringField)))
-	assert.Equal(t, len(stringField), tv.length())
+	assert.EqualValues(t, len(stringField), tv.length())
 }
 
 func TestTagValue_total(t *testing.T) {

@@ -132,12 +132,12 @@ func generateMessageFilter(s *SessionID) (messageFilter *mongoQuickFixEntryData)
 
 type mongoQuickFixEntryData struct {
 	// Message specific data.
-	Msgseq  int    `bson:"msgseq,omitempty"`
+	Msgseq  uint `bson:"msgseq,omitempty"`
 	Message []byte `bson:"message,omitempty"`
 	// Session specific data.
 	CreationTime   time.Time `bson:"creation_time,omitempty"`
-	IncomingSeqNum int       `bson:"incoming_seq_num,omitempty"`
-	OutgoingSeqNum int       `bson:"outgoing_seq_num,omitempty"`
+	IncomingSeqNum uint    `bson:"incoming_seq_num,omitempty"`
+	OutgoingSeqNum uint    `bson:"outgoing_seq_num,omitempty"`
 	// Indexed data.
 	BeginString      string `bson:"begin_string"`
 	SessionQualifier string `bson:"session_qualifier"`
@@ -217,17 +217,17 @@ func (store *mongoStore) populateCache() error {
 }
 
 // NextSenderMsgSeqNum returns the next MsgSeqNum that will be sent.
-func (store *mongoStore) NextSenderMsgSeqNum() int {
+func (store *mongoStore) NextSenderMsgSeqNum() uint {
 	return store.cache.NextSenderMsgSeqNum()
 }
 
 // NextTargetMsgSeqNum returns the next MsgSeqNum that should be received.
-func (store *mongoStore) NextTargetMsgSeqNum() int {
+func (store *mongoStore) NextTargetMsgSeqNum() uint {
 	return store.cache.NextTargetMsgSeqNum()
 }
 
 // SetNextSenderMsgSeqNum sets the next MsgSeqNum that will be sent.
-func (store *mongoStore) SetNextSenderMsgSeqNum(next int) error {
+func (store *mongoStore) SetNextSenderMsgSeqNum(next uint) error {
 	msgFilter := generateMessageFilter(&store.sessionID)
 	sessionUpdate := generateMessageFilter(&store.sessionID)
 	sessionUpdate.IncomingSeqNum = store.cache.NextTargetMsgSeqNum()
@@ -240,7 +240,7 @@ func (store *mongoStore) SetNextSenderMsgSeqNum(next int) error {
 }
 
 // SetNextTargetMsgSeqNum sets the next MsgSeqNum that should be received.
-func (store *mongoStore) SetNextTargetMsgSeqNum(next int) error {
+func (store *mongoStore) SetNextTargetMsgSeqNum(next uint) error {
 	msgFilter := generateMessageFilter(&store.sessionID)
 	sessionUpdate := generateMessageFilter(&store.sessionID)
 	sessionUpdate.IncomingSeqNum = next
@@ -273,7 +273,7 @@ func (store *mongoStore) CreationTime() time.Time {
 	return store.cache.CreationTime()
 }
 
-func (store *mongoStore) SaveMessage(seqNum int, msg []byte) (err error) {
+func (store *mongoStore) SaveMessage(seqNum uint, msg []byte) (err error) {
 	msgFilter := generateMessageFilter(&store.sessionID)
 	msgFilter.Msgseq = seqNum
 	msgFilter.Message = msg
@@ -281,7 +281,7 @@ func (store *mongoStore) SaveMessage(seqNum int, msg []byte) (err error) {
 	return
 }
 
-func (store *mongoStore) SaveMessageAndIncrNextSenderMsgSeqNum(seqNum int, msg []byte) error {
+func (store *mongoStore) SaveMessageAndIncrNextSenderMsgSeqNum(seqNum uint, msg []byte) error {
 
 	if !store.allowTransactions {
 		err := store.SaveMessage(seqNum, msg)
@@ -292,7 +292,7 @@ func (store *mongoStore) SaveMessageAndIncrNextSenderMsgSeqNum(seqNum int, msg [
 	}
 
 	// If the mongodb supports replicasets, perform this operation as a transaction instead-
-	var next int
+	var next uint
 	err := store.db.UseSession(context.Background(), func(sessionCtx mongo.SessionContext) error {
 		if err := sessionCtx.StartTransaction(); err != nil {
 			return err
@@ -327,7 +327,7 @@ func (store *mongoStore) SaveMessageAndIncrNextSenderMsgSeqNum(seqNum int, msg [
 	return store.cache.SetNextSenderMsgSeqNum(next)
 }
 
-func (store *mongoStore) GetMessages(beginSeqNum, endSeqNum int) (msgs [][]byte, err error) {
+func (store *mongoStore) GetMessages(beginSeqNum, endSeqNum uint) (msgs [][]byte, err error) {
 	msgFilter := generateMessageFilter(&store.sessionID)
 	// Marshal into database form.
 	msgFilterBytes, err := bson.Marshal(msgFilter)
